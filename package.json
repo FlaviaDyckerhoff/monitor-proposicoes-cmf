@@ -1,0 +1,12 @@
+{
+  "name": "monitor-proposicoes-florianopolis",
+  "version": "1.0.0",
+  "description": "Monitor de proposições da Câmara Municipal de Florianópolis via API JSON",
+  "main": "monitor.js",
+  "scripts": {
+    "start": "node monitor.js"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.9"
+  }
+}
