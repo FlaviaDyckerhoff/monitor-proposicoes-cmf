@@ -6,7 +6,7 @@ const EMAIL_REMETENTE = process.env.EMAIL_REMETENTE;
 const EMAIL_SENHA = process.env.EMAIL_SENHA;
 const API_TOKEN = process.env.CMF_API_TOKEN;
 const ARQUIVO_ESTADO = 'estado.json';
-const API_BASE = 'https://www.cmf.sc.gov.br/jsonweb/web-aplicativo.php';
+const API_BASE = 'http://www.cmf.sc.gov.br/jsonweb/web-aplicativo.php';
 const MAX_PAGINAS = 20;
 
 // Todos os tipos de proposição disponíveis na API da CMF
