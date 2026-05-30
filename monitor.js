@@ -167,7 +167,7 @@ async function enviarEmail(novas) {
   await transporter.sendMail({
     from: `"Monitor CMF" <${EMAIL_REMETENTE}>`,
     to: EMAIL_DESTINO,
-    subject: `🏛️ CMF Florianópolis: ${novas.length} nova(s) proposição(ões) — ${new Date().toLocaleDateString('pt-BR')}`,
+    subject: `🏛️ Florianópolis: ${novas.length} nova(s) proposição(ões) — ${new Date().toLocaleDateString('pt-BR')}`,
     html,
   });
 
