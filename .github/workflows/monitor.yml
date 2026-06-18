@@ -1,8 +1,6 @@
 name: Monitor Proposições Florianópolis
 
 on:
-  schedule:
-    - cron: '24 8 * * 1-5'   # 05:24 BRT
   workflow_dispatch:
 
 jobs:
