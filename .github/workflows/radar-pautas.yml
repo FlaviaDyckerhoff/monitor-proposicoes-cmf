@@ -1,0 +1,46 @@
+name: Radar de Pautas CMF
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '50 10,16,20 * * 1-5'
+
+jobs:
+  radar-pautas:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Executar Radar de Pautas CMF
+        env:
+          EMAIL_REMETENTE: ${{ secrets.EMAIL_REMETENTE }}
+          EMAIL_SENHA: ${{ secrets.EMAIL_SENHA }}
+          EMAIL_DESTINO: ${{ secrets.EMAIL_DESTINO }}
+          CMF_API_TOKEN: ${{ secrets.CMF_API_TOKEN }}
+          CMF_PAUTAS_LOOKAHEAD_DIAS: '14'
+        run: node monitor-pautas.js
+
+      - name: Salvar estado atualizado no repositório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ ! -f estado_pautas.json ]; then
+            echo '{"pautas_vistas":[],"ultima_execucao":""}' > estado_pautas.json
+          fi
+          git add estado_pautas.json
+          git diff --staged --quiet || git commit -m "chore: atualiza estado de pautas [skip ci]"
+          git push
