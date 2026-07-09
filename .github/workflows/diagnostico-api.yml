@@ -1,0 +1,83 @@
+name: Diagnostico API CMF
+
+on:
+  workflow_dispatch:
+
+jobs:
+  diagnosticar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Diagnosticar calls da API CMF
+        env:
+          CMF_API_TOKEN: ${{ secrets.CMF_API_TOKEN }}
+        run: |
+          node <<'NODE'
+          const token = process.env.CMF_API_TOKEN;
+          if (!token) {
+            throw new Error('CMF_API_TOKEN nao definido');
+          }
+
+          const base = 'https://www.cmf.sc.gov.br/jsonweb/web-aplicativo.php';
+          const tests = [
+            { call: 'proposicoes', tipo: 'Projetos-de-Leis-ordinarias', pagina: '1' },
+            { call: 'pautas', pagina: '1' },
+            { call: 'sessoes', pagina: '1' },
+            { call: 'sessoes_plenarias', pagina: '1' },
+            { call: 'agenda', pagina: '1' },
+            { call: 'comissoes', pagina: '1' },
+            { call: 'reunioes', pagina: '1' },
+            { call: 'vereadores', pagina: '1' },
+            { call: 'materias', pagina: '1' },
+          ];
+
+          function compact(value) {
+            if (value == null) return value;
+            if (Array.isArray(value)) return value.slice(0, 2).map(compact);
+            if (typeof value === 'object') {
+              return Object.fromEntries(
+                Object.entries(value)
+                  .slice(0, 12)
+                  .map(([k, v]) => [k, typeof v === 'string' ? v.slice(0, 180) : compact(v)])
+              );
+            }
+            if (typeof value === 'string') return value.slice(0, 180);
+            return value;
+          }
+
+          for (const test of tests) {
+            const params = new URLSearchParams({ keysoft: token, call: test.call });
+            if (test.tipo) params.set('tipo', test.tipo);
+            if (test.pagina) params.set('pagina', test.pagina);
+            const url = base + '?' + params;
+            const resp = await fetch(url, {
+              headers: {
+                Accept: 'application/json',
+                'User-Agent': 'MonitorLegislativo-Diagnostico/1.0 (+contato: tramitacao@monitorlegislativo.com.br)',
+              },
+              signal: AbortSignal.timeout(30000),
+            });
+            const text = await resp.text();
+            let parsed = null;
+            let parseError = '';
+            try {
+              parsed = text.trim() ? JSON.parse(text) : null;
+            } catch (err) {
+              parseError = String(err.message || err);
+            }
+            const count = Array.isArray(parsed) ? parsed.length : (parsed && typeof parsed === 'object' ? Object.keys(parsed).length : 0);
+            const keys = Array.isArray(parsed) && parsed[0] && typeof parsed[0] === 'object'
+              ? Object.keys(parsed[0])
+              : parsed && typeof parsed === 'object'
+                ? Object.keys(parsed)
+                : [];
+            console.log('CALL', test.call, JSON.stringify({
+              status: resp.status,
+              bytes: text.length,
+              parsedType: Array.isArray(parsed) ? 'array' : typeof parsed,
+              count,
+              keys,
+              parseError,
+              sample: compact(Array.isArray(parsed) ? parsed.slice(0, 1) : parsed),
+            }));
+          }
+          NODE
