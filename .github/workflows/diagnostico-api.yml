@@ -82,15 +82,48 @@ jobs:
           }
 
           const pautaId = '2764';
+          const pautaUrlId = '2764';
           const detailTests = [
             { call: 'pautas', id: pautaId },
             { call: 'pautas', codigo: pautaId },
             { call: 'pautas', cod: pautaId },
             { call: 'pautas', documento: pautaId },
+            { call: 'pautas', pauta: pautaId },
+            { call: 'pautas', pauta_id: pautaId },
+            { call: 'pautas', id_pauta: pautaId },
+            { call: 'pautas', pagina: '1', id: pautaId },
             { call: 'pauta', id: pautaId },
             { call: 'pauta', codigo: pautaId },
             { call: 'pautas_itens', id: pautaId },
             { call: 'itens_pauta', id: pautaId },
+            { call: 'itens-pauta', id: pautaId },
+            { call: 'item_pauta', id: pautaId },
+            { call: 'itenspauta', id: pautaId },
+            { call: 'pautasitens', id: pautaId },
+            { call: 'pauta_itens', id: pautaId },
+            { call: 'pauta-item', id: pautaId },
+            { call: 'materias_pauta', id: pautaId },
+            { call: 'proposicoes_pauta', id: pautaId },
+            { call: 'proposicoes', pauta: pautaId },
+            { call: 'proposicoes', pauta_id: pautaId },
+            { call: 'proposicoes', id_pauta: pautaId },
+            { call: 'proposicoes', id_pauta: pautaUrlId, pagina: '1' },
+            { call: 'projetos_pauta', id: pautaId },
+            { call: 'pauta_detalhe', id: pautaId },
+            { call: 'pautas_detalhe', id: pautaId },
+            { call: 'detalhe_pauta', id: pautaId },
+            { call: 'detalhes_pauta', id: pautaId },
+            { call: 'documentos_pauta', id: pautaId },
+            { call: 'reuniao', id: pautaId },
+            { call: 'reunioes', id: pautaId },
+            { call: 'reuniao_pauta', id: pautaId },
+            { call: 'reunioes_pauta', id: pautaId },
+            { call: 'comissao_pauta', id: pautaId },
+            { call: 'comissoes_pauta', id: pautaId },
+            { call: 'sessoes_pauta', id: pautaId },
+            { call: 'sessao_pauta', id: pautaId },
+            { call: 'tramites', id: pautaId },
+            { call: 'tramitacoes', id: pautaId },
           ];
 
           for (const test of detailTests) {
