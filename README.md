@@ -8,6 +8,21 @@ Este monitor usa a **API JSON oficial da CMF** (`/jsonweb/web-aplicativo.php`) c
 
 ---
 
+
+## Radar de Pautas
+
+Além do monitor de proposições, o repositório também roda o **Radar de Pautas CMF** via `monitor-pautas.js` e `.github/workflows/radar-pautas.yml`.
+
+O Radar usa a mesma API oficial com `call=pautas`, filtra pautas futuras em janela de 14 dias e envia email quando aparece uma pauta nova. O estado fica em `estado_pautas.json`.
+
+Status operacional em 2026-07-09:
+
+- `call=pautas` funciona e retorna `data`, `titulo` e `link`.
+- As páginas HTML de `/pautas/...` caem em Bot Verification/reCAPTCHA no servidor e no GitHub runner.
+- Não foi encontrado endpoint público de detalhe dos itens/proposições da pauta nos testes com `pautas`, `pauta`, `itens_pauta`, `proposicoes_pauta`, `materias_pauta`, `reunioes_pauta` e variações.
+- Por isso, Floripa está em **Radar de Pautas**, não em **Pauta Analisada/Mesa**, até haver fonte estruturada para os itens da pauta.
+
+---
 ## Como funciona
 
 1. Para cada tipo de proposição, chama `call=proposicoes&tipo=CONTRACT&pagina=N`
