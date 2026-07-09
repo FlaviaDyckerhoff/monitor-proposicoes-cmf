@@ -80,4 +80,68 @@ jobs:
               sample: compact(Array.isArray(parsed) ? parsed.slice(0, 1) : parsed),
             }));
           }
+
+          const pautaId = '2764';
+          const detailTests = [
+            { call: 'pautas', id: pautaId },
+            { call: 'pautas', codigo: pautaId },
+            { call: 'pautas', cod: pautaId },
+            { call: 'pautas', documento: pautaId },
+            { call: 'pauta', id: pautaId },
+            { call: 'pauta', codigo: pautaId },
+            { call: 'pautas_itens', id: pautaId },
+            { call: 'itens_pauta', id: pautaId },
+          ];
+
+          for (const test of detailTests) {
+            const params = new URLSearchParams({ keysoft: token, ...test });
+            const resp = await fetch(base + '?' + params, {
+              headers: {
+                Accept: 'application/json',
+                'User-Agent': 'MonitorLegislativo-Diagnostico/1.0 (+contato: tramitacao@monitorlegislativo.com.br)',
+              },
+              signal: AbortSignal.timeout(30000),
+            });
+            const text = await resp.text();
+            let parsed = null;
+            let parseError = '';
+            try {
+              parsed = text.trim() ? JSON.parse(text) : null;
+            } catch (err) {
+              parseError = String(err.message || err);
+            }
+            const count = Array.isArray(parsed) ? parsed.length : (parsed && typeof parsed === 'object' ? Object.keys(parsed).length : 0);
+            const keys = Array.isArray(parsed) && parsed[0] && typeof parsed[0] === 'object'
+              ? Object.keys(parsed[0])
+              : parsed && typeof parsed === 'object'
+                ? Object.keys(parsed)
+                : [];
+            console.log('DETAIL', JSON.stringify(test), JSON.stringify({
+              status: resp.status,
+              bytes: text.length,
+              parsedType: Array.isArray(parsed) ? 'array' : typeof parsed,
+              count,
+              keys,
+              parseError,
+              sample: compact(Array.isArray(parsed) ? parsed.slice(0, 1) : parsed),
+              rawStart: text.slice(0, 120),
+            }));
+          }
+
+          const pautaUrl = 'https://www.cmf.sc.gov.br/pautas/0/0/0/0/2764#pesquisa';
+          const detailResp = await fetch(pautaUrl, {
+            headers: {
+              'User-Agent': 'MonitorLegislativo-Diagnostico/1.0 (+contato: tramitacao@monitorlegislativo.com.br)',
+            },
+            signal: AbortSignal.timeout(30000),
+          });
+          const detailText = await detailResp.text();
+          console.log('HTML_DETAIL', JSON.stringify({
+            status: detailResp.status,
+            bytes: detailText.length,
+            botVerification: /Bot Verification|recaptcha|not a robot/i.test(detailText),
+            title: (detailText.match(/<title[^>]*>(.*?)<\/title>/is) || [null, ''])[1].replace(/\s+/g, ' ').trim().slice(0, 160),
+            hasProjectPattern: /\b[A-Z]{2,5}-?\d{2,5}-?\d{4}\b|Projeto de Lei|REQUERIMENTO|MOÇÃO|INDICAÇÃO/i.test(detailText),
+            rawStart: detailText.slice(0, 160),
+          }));
           NODE
