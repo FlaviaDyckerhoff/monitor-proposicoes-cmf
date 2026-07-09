@@ -175,11 +175,10 @@ async function enviarEmail(pautas) {
   if (novas.length) {
     await enviarEmail(novas);
     for (const pauta of novas) vistos.add(pauta.id);
+    estado.pautas_vistas = Array.from(vistos);
+    estado.ultima_execucao = new Date().toISOString();
+    salvarEstado(estado);
   } else {
     console.log('Sem pautas novas na janela. Nada a enviar.');
   }
-
-  estado.pautas_vistas = Array.from(vistos);
-  estado.ultima_execucao = new Date().toISOString();
-  salvarEstado(estado);
 })();

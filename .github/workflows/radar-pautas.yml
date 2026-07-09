@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '50 10,16,20 * * 1-5'
 
+concurrency:
+  group: radar-pautas-cmf
+  cancel-in-progress: false
+
 jobs:
   radar-pautas:
     runs-on: ubuntu-latest
